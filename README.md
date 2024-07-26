@@ -1,46 +1,66 @@
-# Getting Started with Create React App
+# React Window Infinite Scroll
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A React component for implementing infinite scrolling using `react-window` and `react-window-infinite-loader`. Ideal for scenarios where you need to handle a large list of items with virtualization and infinite loading.
 
-## Available Scripts
+## Installation
 
-In the project directory, you can run:
+You can install this package via npm or yarn:
 
-### `npm start`
+```sh
+npm install react-window-infinite-scroll-simple
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+or
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+yarn add react-window-infinite-scroll-simple
+```
 
-### `npm test`
+## Usage
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+To use the ReactWindowInfiniteScroll component in your application, follow these steps:
 
-### `npm run build`
+Import the Component:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```jsx
+import { ReactWindowInfiniteScroll } from "./lib";
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+function App() {
+  const dummyList = new Array(40).fill(0).map((_, idx) => ({
+    id: idx,
+    name: `List ${idx}`,
+  }));
+  const totalPages = 16; // Total number of pages
+  const currentPage = 10; // Current page number
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+  const infiniteCallback = () => {
+    console.log("Loading next page...");
+    // Implement the logic to fetch and append new data here
+  };
 
-### `npm run eject`
+  return (
+    <div style={{ width: 300, height: 800, backgroundColor: "#ddd" }}>
+      <ReactWindowInfiniteScroll
+        totalPage={totalPages}
+        currentPage={currentPage}
+        itemLength={dummyList.length}
+        listHeight={50}
+        infiniteCallback={infiniteCallback}
+      >
+        {({ index, style }) => <div style={style}>{dummyList[index].name}</div>}
+      </ReactWindowInfiniteScroll>
+    </div>
+  );
+}
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+export default App;
+```
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## props
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+|        name        |      type       | description                                                                                                                                                                                                                                                                                   |
+| :----------------: | :-------------: | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|    `totalPage`     |    `number`     | The total number of pages available. This helps the component determine when it has reached the last page and adjust the item count accordingly.                                                                                                                                              |
+|    `itemLength`    |    `number`     | The total number of items currently available on the current page. This prop is essential for determining the number of items to display and manage loading states.                                                                                                                           |
+| `infiniteCallback` |   `function`    | A callback function that is triggered to load more items when the user scrolls near the end of the list. The function receives the range of items that need to be loaded. (e.g `(startIndex: number, stopIndex: number) => void`)                                                             |
+|     `children`     | `ComponentType` | A function that returns the content to be rendered for each list item. It receives an object with `index` and `style` properties which should be applied to each item for proper rendering within the list. (e.g `(props: { index: number, style: React.CSSProperties }) => React.ReactNode`) |
+|    `listHeight`    |    `number`     | The total number of items currently available on the current page. This prop is essential for determining the number of items to display and manage loading states.                                                                                                                           |
+|    `itemLength`    |    `number`     | The height of each item in the list. This value is used to calculate the total height of the list and ensures proper item positioning. The default height is set to 44 pixels but can be customized as needed (`default height : 44`).                                                        |
